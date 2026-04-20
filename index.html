@@ -366,7 +366,7 @@
 
     const grossFull = basic + hra + da + ta + med + spl + oth;
     const gross = Math.round(grossFull * clampedFactor);
-    sv('grossEarnings', '₹ ' + gross.toLocaleString('en-IN'));
+    document.getElementById('grossEarnings').value = '₹ ' + gross.toLocaleString('en-IN');
 
     // PF: 12% of basic (capped at PF wage ceiling ₹15,000 → max ₹1800, but many cos use full basic)
     const pfField = document.getElementById('pf');
@@ -403,7 +403,7 @@
     const oded = v('otherDed');
 
     const totalDed = pf + esi + pt + tds + adv + oded;
-    sv('totalDeductions', '₹ ' + totalDed.toLocaleString('en-IN'));
+    document.getElementById('totalDeductions').value = '₹ ' + totalDed.toLocaleString('en-IN');
   }
 
   // Mark HRA as manually edited
