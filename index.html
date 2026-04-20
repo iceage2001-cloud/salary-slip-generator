@@ -78,6 +78,8 @@
       border-color: #3949ab;
       background: #fff;
     }
+    .field-error { border-color: #e53935 !important; background: #fff5f5 !important; }
+    .field-error-msg { color: #e53935; font-size: 0.75rem; margin-top: 2px; }
 
     /* ===== SALARY TABLE IN FORM ===== */
     .salary-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
@@ -205,7 +207,7 @@
       <div class="form-group"><label>Pay Period / Month *</label>
         <select id="payMonth">
           <option value="">Select Month</option>
-          <option>April 2026</option><option>March 2026</option><option>February 2026</option>
+          <option selected>April 2026</option><option>March 2026</option><option>February 2026</option>
           <option>January 2026</option><option>December 2025</option><option>November 2025</option>
           <option>October 2025</option><option>September 2025</option><option>August 2025</option>
           <option>July 2025</option><option>June 2025</option><option>May 2025</option>
@@ -436,11 +438,30 @@
 
   // ===== GENERATE SLIP =====
   function generateSlip() {
+    // Clear previous errors
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+    document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+
+    let hasError = false;
+    function markError(id, msg) {
+      const el = document.getElementById(id);
+      el.classList.add('field-error');
+      el.focus();
+      const span = document.createElement('span');
+      span.className = 'field-error-msg';
+      span.textContent = '⚠ ' + msg;
+      el.parentNode.appendChild(span);
+      hasError = true;
+    }
+
+    // Auto-fill defaults for optional fields
+    if (!document.getElementById('companyName').value.trim()) document.getElementById('companyName').value = 'My Company';
+    if (!document.getElementById('empName').value.trim()) document.getElementById('empName').value = 'Employee';
+    if (!document.getElementById('payMonth').value) document.getElementById('payMonth').value = 'April 2026';
+
     // Validation
-    if (!document.getElementById('companyName').value.trim()) { alert('Please enter Company Name'); return; }
-    if (!document.getElementById('empName').value.trim()) { alert('Please enter Employee Name'); return; }
-    if (!document.getElementById('basic').value) { alert('Please enter Basic Salary'); return; }
-    if (!document.getElementById('payMonth').value) { alert('Please select Pay Period / Month'); return; }
+    if (!document.getElementById('basic').value || v('basic') <= 0) { markError('basic', 'Please enter Basic Salary'); }
+    if (hasError) { document.getElementById('basic').scrollIntoView({behavior:'smooth'}); return; }
 
     calculateAll();
 
