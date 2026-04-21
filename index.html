@@ -268,17 +268,54 @@
     .calc-info { font-size: 0.73rem; color: #4f46e5; margin-top: 3px; font-style: italic; line-height: 1.5; }
     .cap-info { font-size: 0.7rem; color: #dc2626; font-weight: 600; margin-top: 2px; }
     @media print {
-      body * { visibility: hidden; }
-      #slip, #slip * { visibility: visible; }
-      #slip {
-        position: fixed; top: 0; left: 0;
-        width: 100%; max-width: 100%;
-        border: none; border-radius: 0;
-        padding: 16px 20px;
-        font-size: 11px;
-      }
-      .slip-company-name { font-size: 1.1rem; }
+      /* Hide EVERYTHING except the slip */
+      body { background: #fff !important; margin: 0; padding: 0; }
+      header,
+      .summary-bar,
+      .ad-banner,
+      footer,
+      .steps-row,
       .no-print { display: none !important; }
+
+      /* Hide ALL cards by default */
+      .container > .card,
+      .container > div:not(#preview-section) { display: none !important; }
+
+      /* Show only the preview wrapper */
+      #preview-section { display: block !important; }
+      #preview-section > .card {
+        display: block !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+      }
+      #preview-section h2 { display: none !important; }
+
+      /* Slip itself — full natural flow so multi-page works */
+      #slip {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 12px 16px !important;
+        font-size: 11pt !important;
+        page-break-inside: auto;
+      }
+      .slip-company-name { font-size: 14pt !important; }
+      .slip-earn-ded { page-break-inside: avoid; }
+      .slip-net       { page-break-inside: avoid; }
+      .slip-footer    { page-break-inside: avoid; }
+
+      /* Force black ink on coloured backgrounds */
+      .slip-col-title  { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slip-net        { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slip-title      { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slip-row-total  { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      @page { margin: 12mm; size: A4 portrait; }
     }
   </style>
 </head>
