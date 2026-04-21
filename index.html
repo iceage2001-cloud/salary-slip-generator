@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Indian Salary Slip Generator – Free Online Tool</title>
-  <meta name="description" content="Free Indian salary slip generator online. Generate professional salary slips with PF, ESI, HRA, DA deductions. Download as PDF instantly. No signup required." />
+  <title>Indian Salary Slip Generator – Free Online Tool | PF ESI TDS Auto Calculator</title>
+  <meta name="description" content="Free Indian salary slip generator online. Generate professional salary slips with PF, ESI, HRA, DA, TDS deductions auto-calculated. Download as PDF instantly. No signup required." />
+  <meta name="keywords" content="salary slip generator India, payslip generator, PF ESI TDS calculator, Indian salary calculator, salary slip PDF download, HRA calculator, income tax calculator India, free payslip online" />
+  <meta name="author" content="Indian Salary Slip Generator" />
+  <meta property="og:title" content="Indian Salary Slip Generator – Free Online Tool" />
+  <meta property="og:description" content="Generate professional Indian salary slips with PF, ESI, HRA, TDS auto-calculated. Free, instant PDF download." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://iceage2001-cloud.github.io/salary-slip-generator/" />
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -321,6 +329,23 @@
 </head>
 <body>
 
+<!-- COOKIE CONSENT BANNER -->
+<div id="cookieBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1e293b; color:#e2e8f0; padding:14px 20px; z-index:9999; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:0.82rem; box-shadow:0 -4px 16px rgba(0,0,0,0.25);">
+  <span>🍪 We use cookies to serve ads via Google AdSense. By continuing to use this site, you agree to our
+    <a href="#privacy-policy" style="color:#818cf8; text-decoration:underline;">Privacy Policy</a>.
+  </span>
+  <button onclick="document.getElementById('cookieBanner').style.display='none'; localStorage.setItem('cookieOK','1');"
+    style="background:#4f46e5; color:#fff; border:none; padding:8px 20px; border-radius:7px; font-weight:700; cursor:pointer; font-size:0.82rem; white-space:nowrap;">
+    Got it ✓
+  </button>
+</div>
+<script>
+  // Show cookie banner only if not already accepted
+  if (!localStorage.getItem('cookieOK')) {
+    document.getElementById('cookieBanner').style.display = 'flex';
+  }
+</script>
+
 <header>
   <h1>Indian Salary Slip Generator</h1>
   <p>Free &nbsp;|&nbsp; Instant PDF &nbsp;|&nbsp; PF · ESI · HRA · TDS Auto-Calculated &nbsp;|&nbsp; No Signup Required</p>
@@ -344,9 +369,18 @@
   </div>
 </div>
 
-<!-- AD BANNER TOP (Replace with Google AdSense code) -->
+<!-- AD TOP: Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID -->
 <div class="container">
-  <div class="ad-banner">📢 Advertisement – Your Google AdSense Ad will appear here</div>
+  <div class="ad-banner no-print">
+    <!-- AdSense unit 1 — Horizontal banner -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="1111111111"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 </div>
 
 <div class="container">
@@ -440,7 +474,7 @@
     <div class="form-grid" style="margin-top:14px;">
       <div class="form-group">
         <label>Annual CTC / Gross Salary (₹) <span style="font-size:0.68rem;color:#10b981;font-weight:600;">— or auto-fills from Basic below</span></label>
-        <input type="number" id="annualCTC" placeholder="e.g. 600000" oninput="calcTDS()" />
+        <input type="number" id="annualCTC" placeholder="e.g. 600000" oninput="this.dataset.manual='1'; calculateAll()" />
       </div>
       <div class="form-group">
         <label>Monthly TDS / Income Tax (₹)</label>
@@ -600,8 +634,17 @@
     <button class="btn btn-secondary" onclick="clearForm()">🔄 Clear Form</button>
   </div>
 
-  <!-- AD BANNER MIDDLE -->
-  <div class="ad-banner no-print">📢 Advertisement – Your Google AdSense Ad will appear here</div>
+  <!-- AD MIDDLE -->
+  <div class="ad-banner no-print">
+    <!-- AdSense unit 2 — In-article -->
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-layout="in-article"
+         data-ad-format="fluid"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="2222222222"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <!-- PREVIEW -->
   <div id="preview-section">
@@ -643,11 +686,61 @@
     </div>
   </div>
 
-  <!-- AD BANNER BOTTOM -->
-  <div class="ad-banner no-print">📢 Advertisement – Your Google AdSense Ad will appear here</div>
+  <!-- ABOUT & CONTACT -->
+  <div class="card no-print" id="about">
+    <h2>👋 About This Tool</h2>
+    <div style="line-height:1.9; font-size:0.88rem; color:#444;">
+      <p>The <strong>Indian Salary Slip Generator</strong> is a free, browser-based tool built for Indian employees and HR professionals. It auto-calculates PF (12%), ESI (0.75%), HRA (40%/50%), Professional Tax, and TDS under both Old and New Tax Regimes for FY 2025-26.</p>
+      <p style="margin-top:8px;">All calculations happen <strong>entirely in your browser</strong> — no data is sent to any server, no account required.</p>
+      <p style="margin-top:8px;"><strong>Contact / Feedback:</strong> Found a bug or have a suggestion? Reach us at <a href="mailto:salaryslipgenerator@gmail.com" style="color:#4f46e5;">salaryslipgenerator@gmail.com</a></p>
+    </div>
+  </div>
+
+  <!-- PRIVACY POLICY -->
+  <div class="card no-print" id="privacy-policy">
+    <h2>🔒 Privacy Policy</h2>
+    <div style="line-height:1.9; font-size:0.85rem; color:#444;">
+      <p><strong>Last updated: April 2026</strong></p>
+
+      <p style="margin-top:10px;"><strong>1. Data We Collect</strong><br/>
+      This website does <strong>not collect, store, or transmit</strong> any personal data you enter. All salary calculations are performed locally in your browser. No information is saved on any server.</p>
+
+      <p style="margin-top:10px;"><strong>2. Cookies &amp; Advertising</strong><br/>
+      We use <strong>Google AdSense</strong> to display advertisements. Google may use cookies to serve ads based on your prior visits to this or other websites. You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener" style="color:#4f46e5;">Google Ad Settings</a>.</p>
+
+      <p style="margin-top:10px;"><strong>3. Third-Party Services</strong><br/>
+      We use Google Fonts (fonts.googleapis.com) for typography. Google may log requests to serve fonts. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:#4f46e5;">Google's Privacy Policy</a>.</p>
+
+      <p style="margin-top:10px;"><strong>4. No Account Required</strong><br/>
+      This tool does not require registration, login, or any personal information to use.</p>
+
+      <p style="margin-top:10px;"><strong>5. Changes to This Policy</strong><br/>
+      We may update this privacy policy from time to time. Changes will be reflected on this page with an updated date.</p>
+
+      <p style="margin-top:10px;"><strong>6. Contact</strong><br/>
+      For privacy-related questions, contact us at <a href="mailto:salaryslipgenerator@gmail.com" style="color:#4f46e5;">salaryslipgenerator@gmail.com</a></p>
+    </div>
+  </div>
+
+  <!-- AD BOTTOM -->
+  <div class="ad-banner no-print">
+    <!-- AdSense unit 3 — Multiplex / anchor -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="3333333333"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <footer style="text-align:center; font-size:0.78rem; color:#888; padding:16px 0 24px;" class="no-print">
     <p>© 2026 Indian Salary Slip Generator &nbsp;|&nbsp; Free tool for Indian employees and employers</p>
+    <p style="margin-top:6px;">
+      <a href="#privacy-policy" style="color:#4f46e5; text-decoration:none; margin:0 8px;">Privacy Policy</a> |
+      <a href="#about" style="color:#4f46e5; text-decoration:none; margin:0 8px;">About</a> |
+      <a href="mailto:salaryslipgenerator@gmail.com" style="color:#4f46e5; text-decoration:none; margin:0 8px;">Contact</a>
+    </p>
     <p style="margin-top:4px;">Disclaimer: This tool is for informational purposes only. Verify deductions with your HR or Chartered Accountant.</p>
   </footer>
 
@@ -684,7 +777,7 @@
       document.getElementById('autoTDS').value = '';
       document.getElementById('tds').value = 0;
       document.getElementById('taxSummaryBox').style.display = 'none';
-      calculateAll(); return;
+      return; // annualCTC is 0 — nothing to compute
     }
 
     var annualTax = 0, taxable = 0, stdDed = 0;
@@ -798,8 +891,8 @@
     }
     document.getElementById('ts_annual').textContent   = inr(annualTax);
     document.getElementById('ts_monthly').textContent  = inr(monthlyTDS);
-
-    calculateAll();
+    // NOTE: calculateAll() is NOT called here — calculateAll() calls calcTDS() and
+    // re-reads tds after we return, so there is no need for recursion.
   }
 
   // ===== AUTO-CALCULATE =====
@@ -868,12 +961,6 @@
     const pf  = v('pf');
     const esi = v('esi');
     const pt  = v('pt');
-    const tds = v('tds');
-    const adv = v('advance');
-    const oded = v('otherDed');
-
-    const totalDed = pf + esi + pt + tds + adv + oded;
-    document.getElementById('totalDeductions').value = inr(totalDed);
 
     // Auto-derive annualCTC from gross (if not manually set)
     var ctcField = document.getElementById('annualCTC');
@@ -881,10 +968,24 @@
       ctcField.value = gross * 12;
     }
 
-    // Live summary bar
-    var netLive = Math.max(gross - totalDed, 0);
+    // Auto-calculate TDS BEFORE reading tds so totalDed includes it
+    if (!window._tdsLock) {
+      window._tdsLock = true;
+      calcTDS();
+      window._tdsLock = false;
+    }
+
+    // Re-read tds AFTER calcTDS() has updated it
+    const tdsUpdated = v('tds');
+    const advUpdated = v('advance');
+    const odedUpdated = v('otherDed');
+    const totalDedFinal = pf + esi + pt + tdsUpdated + advUpdated + odedUpdated;
+    document.getElementById('totalDeductions').value = inr(totalDedFinal);
+
+    // Live summary bar (now uses correct TDS)
+    var netLive = Math.max(gross - totalDedFinal, 0);
     document.getElementById('summaryGross').textContent = inr(gross);
-    document.getElementById('summaryDed').textContent   = inr(totalDed);
+    document.getElementById('summaryDed').textContent   = inr(totalDedFinal);
     document.getElementById('summaryNet').textContent   = inr(netLive);
   }
 
@@ -900,9 +1001,7 @@
     document.getElementById('annualCTC').dataset.manual = '';
     calculateAll();
   });
-  document.getElementById('annualCTC').addEventListener('input', function() {
-    this.dataset.manual = '1';
-  });
+  // annualCTC manual flag is set inline in oninput — no extra listener needed
 
   // ===== NUMBER TO WORDS (Indian) =====
   function numToWords(n) {
