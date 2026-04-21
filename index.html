@@ -112,6 +112,20 @@
     .check-row label { font-size: 0.85rem; color: #444; display: flex; align-items: center; gap: 5px; cursor: pointer; margin-right: 16px; }
     .check-row input[type=checkbox] { width: 15px; height: 15px; accent-color: #3949ab; cursor: pointer; }
 
+    /* ===== TAX REGIME TOGGLE ===== */
+    .regime-toggle { display: flex; gap: 0; border-radius: 8px; overflow: hidden; border: 2px solid #3949ab; width: fit-content; margin-bottom: 16px; }
+    .regime-btn { padding: 9px 24px; border: none; background: #fff; color: #3949ab; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; transition: background 0.2s, color 0.2s; }
+    .regime-btn.active { background: #3949ab; color: #fff; }
+
+    /* ===== INFO BOX ===== */
+    .info-box { background: #e8f5e9; border-left: 4px solid #2e7d32; border-radius: 6px; padding: 10px 14px; font-size: 0.83rem; color: #1b5e20; margin-bottom: 12px; line-height: 1.6; }
+    .info-box.orange { background: #fff3e0; border-color: #e65100; color: #bf360c; }
+    .info-box.blue { background: #e3f2fd; border-color: #1565c0; color: #0d47a1; }
+
+    /* ===== DISCLAIMER BOX ===== */
+    .disclaimer { background: #fff8e1; border: 1px solid #fbc02d; border-radius: 8px; padding: 12px 16px; font-size: 0.8rem; color: #5d4037; line-height: 1.7; margin-top: 8px; }
+    .disclaimer strong { color: #e65100; }
+
     /* ===== BUTTONS ===== */
     .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
     .btn {
@@ -254,6 +268,47 @@
     </table>
   </div>
 
+  <!-- TAX REGIME -->
+  <div class="card">
+    <h2>🏛️ Tax Regime Selection (FY 2025-26)</h2>
+    <div class="regime-toggle">
+      <button class="regime-btn" id="btnOld" onclick="setRegime('old')">Old Regime</button>
+      <button class="regime-btn active" id="btnNew" onclick="setRegime('new')">New Regime</button>
+    </div>
+    <div id="regimeInfoNew" class="info-box">
+      <strong>New Tax Regime (Default from FY 2024-25):</strong> Lower slab rates, no exemptions/deductions (no 80C, HRA, LTA). Standard Deduction ₹75,000.
+      Slabs: Up to ₹3L = Nil | ₹3L–7L = 5% | ₹7L–10L = 10% | ₹10L–12L = 15% | ₹12L–15L = 20% | Above ₹15L = 30%.
+      <br/><strong>Tax Rebate u/s 87A:</strong> Full rebate if net taxable income ≤ ₹7 Lakhs (tax = ₹0).
+    </div>
+    <div id="regimeInfoOld" class="info-box" style="display:none;">
+      <strong>Old Tax Regime:</strong> Higher rates but allows exemptions: HRA, LTA, 80C (₹1.5L), 80D, Standard Deduction ₹50,000, etc.
+      Slabs: Up to ₹2.5L = Nil | ₹2.5L–5L = 5% | ₹5L–10L = 20% | Above ₹10L = 30%.
+      <br/><strong>Tax Rebate u/s 87A:</strong> Full rebate if net taxable income ≤ ₹5 Lakhs (tax = ₹0).
+    </div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group"><label>Annual CTC / Gross Salary (₹)</label><input type="number" id="annualCTC" placeholder="e.g. 600000" oninput="calcTDS()" /></div>
+      <div class="form-group"><label>Auto-calculated TDS/month (₹)</label><input type="text" id="autoTDS" readonly style="background:#f0f4f8;font-weight:700;color:#1a237e;" /></div>
+    </div>
+  </div>
+
+  <!-- EXEMPTIONS (Old Regime) -->
+  <div class="card" id="exemptionsCard">
+    <h2>🧾 Exemptions &amp; Deductions (Old Regime Only)</h2>
+    <div class="info-box blue">These reduce your taxable income under Old Regime. Not applicable under New Regime.</div>
+    <table class="salary-table">
+      <thead><tr><th>Exemption / Deduction</th><th>Annual Amount (₹)</th><th>Section</th></tr></thead>
+      <tbody>
+        <tr><td><label>HRA Exemption (metro: 50%, non-metro: 40% of Basic)</label></td><td><input type="number" id="exHRA" placeholder="Auto or enter" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 10(13A)</td></tr>
+        <tr><td><label>LTA (Leave Travel Allowance)</label></td><td><input type="number" id="exLTA" placeholder="0" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 10(5)</td></tr>
+        <tr><td><label>80C – PF + PPF + ELSS + LIC + Tuition Fee</label></td><td><input type="number" id="ex80C" placeholder="Max ₹1,50,000" max="150000" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 80C</td></tr>
+        <tr><td><label>80D – Medical Insurance Premium</label></td><td><input type="number" id="ex80D" placeholder="Max ₹25,000 (self+family)" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 80D</td></tr>
+        <tr><td><label>80CCD(1B) – NPS Additional Contribution</label></td><td><input type="number" id="exNPS" placeholder="Max ₹50,000" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 80CCD(1B)</td></tr>
+        <tr><td><label>Home Loan Interest</label></td><td><input type="number" id="exHL" placeholder="Max ₹2,00,000" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 24(b)</td></tr>
+        <tr><td><label>Other Deductions (80E, 80G, etc.)</label></td><td><input type="number" id="exOther" placeholder="0" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Various</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <!-- DEDUCTIONS -->
   <div class="card">
     <h2>➖ Deductions</h2>
@@ -274,6 +329,22 @@
         <tr class="total-row"><td>Total Deductions</td><td><input type="text" id="totalDeductions" readonly /></td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- LEGAL DISCLAIMER -->
+  <div class="card no-print">
+    <h2>⚖️ Legal Disclaimer</h2>
+    <div class="disclaimer">
+      <strong>Important:</strong> This salary slip is generated for informational and reference purposes only.
+      <ul style="margin: 8px 0 0 18px; line-height:1.9;">
+        <li>This tool does <strong>not constitute legal, financial, or tax advice</strong>.</li>
+        <li>TDS calculations are <strong>estimates only</strong>. Actual tax liability depends on full-year income, investments, and other factors.</li>
+        <li>PF, ESI, and Professional Tax rates are as per current Indian law but <strong>may vary by state or employer</strong>.</li>
+        <li>For legally accepted salary slips (visa, bank loan, court use), get them signed and stamped by your <strong>HR department or employer</strong>.</li>
+        <li>Always consult a <strong>Chartered Accountant (CA)</strong> for accurate tax computation and filing.</li>
+        <li>The tool creator is <strong>not liable</strong> for any financial or legal consequences arising from use of this tool.</li>
+      </ul>
+    </div>
   </div>
 
   <!-- GENERATE BUTTONS -->
@@ -336,6 +407,59 @@
 </div><!-- /container -->
 
 <script>
+  // ===== TAX REGIME =====
+  var currentRegime = 'new';
+  function setRegime(r) {
+    currentRegime = r;
+    document.getElementById('btnOld').classList.toggle('active', r === 'old');
+    document.getElementById('btnNew').classList.toggle('active', r === 'new');
+    document.getElementById('regimeInfoOld').style.display = r === 'old' ? '' : 'none';
+    document.getElementById('regimeInfoNew').style.display = r === 'new' ? '' : 'none';
+    document.getElementById('exemptionsCard').style.display = r === 'old' ? '' : 'none';
+    calcTDS();
+  }
+
+  function calcTDS() {
+    var annualCTC = parseFloat(document.getElementById('annualCTC').value) || 0;
+    if (annualCTC <= 0) { document.getElementById('autoTDS').value = ''; document.getElementById('tds').value = 0; return; }
+    var annualTax = 0;
+    if (currentRegime === 'new') {
+      var taxable = annualCTC - 75000; // standard deduction
+      if (taxable <= 0) taxable = 0;
+      if (taxable <= 300000) annualTax = 0;
+      else if (taxable <= 700000) annualTax = (taxable - 300000) * 0.05;
+      else if (taxable <= 1000000) annualTax = 20000 + (taxable - 700000) * 0.10;
+      else if (taxable <= 1200000) annualTax = 50000 + (taxable - 1000000) * 0.15;
+      else if (taxable <= 1500000) annualTax = 80000 + (taxable - 1200000) * 0.20;
+      else annualTax = 140000 + (taxable - 1500000) * 0.30;
+      // Rebate 87A: if taxable <= 700000, tax = 0
+      if (taxable <= 700000) annualTax = 0;
+    } else {
+      // Old regime
+      var hra   = Math.min(parseFloat(document.getElementById('exHRA').value) || 0, annualCTC * 0.40);
+      var lta   = parseFloat(document.getElementById('exLTA').value) || 0;
+      var c80C  = Math.min(parseFloat(document.getElementById('ex80C').value) || 0, 150000);
+      var c80D  = Math.min(parseFloat(document.getElementById('ex80D').value) || 0, 25000);
+      var nps   = Math.min(parseFloat(document.getElementById('exNPS').value) || 0, 50000);
+      var hl    = Math.min(parseFloat(document.getElementById('exHL').value) || 0, 200000);
+      var other = parseFloat(document.getElementById('exOther').value) || 0;
+      var taxable = annualCTC - 50000 - hra - lta - c80C - c80D - nps - hl - other;
+      if (taxable <= 0) taxable = 0;
+      if (taxable <= 250000) annualTax = 0;
+      else if (taxable <= 500000) annualTax = (taxable - 250000) * 0.05;
+      else if (taxable <= 1000000) annualTax = 12500 + (taxable - 500000) * 0.20;
+      else annualTax = 112500 + (taxable - 1000000) * 0.30;
+      // Rebate 87A: if taxable <= 500000, tax = 0
+      if (taxable <= 500000) annualTax = 0;
+    }
+    // Add 4% Health & Education Cess
+    annualTax = annualTax * 1.04;
+    var monthlyTDS = Math.round(annualTax / 12);
+    document.getElementById('autoTDS').value = monthlyTDS > 0 ? '₹ ' + monthlyTDS.toLocaleString('en-IN') + ' / month' : '₹ 0 (No Tax)';
+    document.getElementById('tds').value = monthlyTDS;
+    calculateAll();
+  }
+
   // ===== AUTO-CALCULATE =====
   function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
   function sv(id, val) { document.getElementById(id).value = val % 1 === 0 ? val : val.toFixed(2); }
@@ -567,6 +691,17 @@
       </div>
       <div class="slip-words">Amount in Words: <strong>${numToWords(netPay)}</strong></div>
 
+      <div style="margin-top:10px; font-size:0.75rem; background:#f5f5f5; border-radius:4px; padding:7px 10px; color:#555;">
+        <strong>Tax Regime:</strong> ${currentRegime === 'new' ? 'New Tax Regime (FY 2025-26)' : 'Old Tax Regime (FY 2025-26)'}
+        &nbsp;|&nbsp; <strong>TDS/Month:</strong> ${fmt(v('tds'))}
+      </div>
+
+      <div style="margin-top:10px; font-size:0.7rem; color:#888; border-top:1px dashed #ccc; padding-top:8px; line-height:1.6;">
+        <strong>Disclaimer:</strong> This is a computer-generated salary slip for reference purposes only. It does not constitute legal or tax advice.
+        TDS figures are estimates. Actual tax liability may vary. Consult your HR or CA for official records.
+        This document is not valid for legal/court proceedings without employer's signature and stamp.
+      </div>
+
       <div class="slip-footer">
         <div class="slip-sign">
           <div class="slip-sign-line"></div>
@@ -594,17 +729,16 @@
       else if (el.id === 'lwp') el.value = 0;
       else el.value = '';
     });
-    document.getElementById('payMonth').value = '';
+    document.getElementById('payMonth').value = 'April 2026';
     document.getElementById('chkPF').checked = true;
     document.getElementById('chkESI').checked = true;
     document.getElementById('chkPT').checked = true;
-    document.getElementById('hra').dataset.manual = 'false';
-    document.getElementById('grossEarnings').value = '';
-    document.getElementById('totalDeductions').value = '';
+    setRegime('new');
     document.getElementById('preview-section').style.display = 'none';
   }
 
-  // Init calculate on load
+  // Init
+  setRegime('new');
   calculateAll();
 </script>
 </body>
