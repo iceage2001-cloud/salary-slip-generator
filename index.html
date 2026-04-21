@@ -250,7 +250,23 @@
     .slip-sign { text-align: center; }
     .slip-sign-line { border-top: 1px solid #64748b; width: 140px; margin: 26px auto 4px; }
 
-    /* ===== PRINT STYLES ===== */
+    /* ===== TAX COMPUTATION SUMMARY ===== */
+    .tax-summary-table { width: 100%; border-collapse: collapse; margin-top: 14px; border-radius: 8px; overflow: hidden; }
+    .tax-summary-table td { padding: 7px 14px; font-size: 0.84rem; border-bottom: 1px solid #e2e8f0; }
+    .tax-summary-table td:last-child { text-align: right; font-weight: 600; font-family: 'Courier New', monospace; }
+    .tax-summary-table tr.ts-head td { background: #4f46e5; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+    .tax-summary-table tr.ts-sub td { background: #f8fafc; color: #64748b; padding-left: 22px; }
+    .tax-summary-table tr.ts-sub td:last-child { color: #dc2626; }
+    .tax-summary-table tr.ts-total td { background: #eef2ff; font-weight: 800; font-size: 0.92rem; color: #1e40af; border-top: 2px solid #4f46e5; }
+    .tax-summary-table tr.ts-tax td { background: #fff7ed; color: #9a3412; font-weight: 700; border-top: 2px solid #f97316; }
+    .tax-summary-table tr.ts-net td { background: linear-gradient(90deg,#059669,#10b981); color: #fff; font-weight: 800; font-size: 1rem; }
+    .tax-summary-table tr.ts-rebate td:last-child { color: #059669; font-weight: 700; }
+    .tax-summary-table tr.ts-zero td { background: #f0fdf4; color: #166534; font-weight: 700; text-align: center !important; font-size: 0.9rem; }
+
+    /* ===== AUTO BADGE ===== */
+    .auto-badge { font-size: 0.6rem; background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 4px; padding: 1px 5px; margin-left: 5px; font-weight: 700; letter-spacing: 0.3px; vertical-align: middle; }
+    .calc-info { font-size: 0.73rem; color: #4f46e5; margin-top: 3px; font-style: italic; line-height: 1.5; }
+    .cap-info { font-size: 0.7rem; color: #dc2626; font-weight: 600; margin-top: 2px; }
     @media print {
       body * { visibility: hidden; }
       #slip, #slip * { visibility: visible; }
@@ -375,35 +391,130 @@
       <button class="regime-btn active" id="btnNew" onclick="setRegime('new')">New Regime</button>
     </div>
     <div id="regimeInfoNew" class="info-box">
-      <strong>New Tax Regime (Default from FY 2024-25):</strong> Lower slab rates, no exemptions/deductions (no 80C, HRA, LTA). Standard Deduction ₹75,000.
-      Slabs: Up to ₹3L = Nil | ₹3L–7L = 5% | ₹7L–10L = 10% | ₹10L–12L = 15% | ₹12L–15L = 20% | Above ₹15L = 30%.
-      <br/><strong>Tax Rebate u/s 87A:</strong> Full rebate if net taxable income ≤ ₹7 Lakhs (tax = ₹0).
+      <strong>New Tax Regime (Default FY 2024-25 onwards):</strong> Standard Deduction ₹75,000. No exemptions/deductions allowed.<br/>
+      Slabs: ₹0–3L = Nil | ₹3–7L = 5% | ₹7–10L = 10% | ₹10–12L = 15% | ₹12–15L = 20% | &gt;₹15L = 30%.<br/>
+      <strong>87A Rebate:</strong> Taxable income ≤ ₹7L → Tax = ₹0.
     </div>
     <div id="regimeInfoOld" class="info-box" style="display:none;">
-      <strong>Old Tax Regime:</strong> Higher rates but allows exemptions: HRA, LTA, 80C (₹1.5L), 80D, Standard Deduction ₹50,000, etc.
-      Slabs: Up to ₹2.5L = Nil | ₹2.5L–5L = 5% | ₹5L–10L = 20% | Above ₹10L = 30%.
-      <br/><strong>Tax Rebate u/s 87A:</strong> Full rebate if net taxable income ≤ ₹5 Lakhs (tax = ₹0).
+      <strong>Old Tax Regime:</strong> Standard Deduction ₹50,000 + HRA, LTA, 80C (₹1.5L), 80D, NPS, Home Loan allowed.<br/>
+      Slabs: ₹0–2.5L = Nil | ₹2.5–5L = 5% | ₹5–10L = 20% | &gt;₹10L = 30%.<br/>
+      <strong>87A Rebate:</strong> Taxable income ≤ ₹5L → Tax = ₹0.
     </div>
-    <div class="form-grid" style="margin-top:12px;">
-      <div class="form-group"><label>Annual CTC / Gross Salary (₹)</label><input type="number" id="annualCTC" placeholder="e.g. 600000" oninput="calcTDS()" /></div>
-      <div class="form-group"><label>Auto-calculated TDS/month (₹)</label><input type="text" id="autoTDS" readonly style="background:#f0f4f8;font-weight:700;color:#1a237e;" /></div>
+    <div class="form-grid" style="margin-top:14px;">
+      <div class="form-group">
+        <label>Annual CTC / Gross Salary (₹) <span style="font-size:0.68rem;color:#10b981;font-weight:600;">— or auto-fills from Basic below</span></label>
+        <input type="number" id="annualCTC" placeholder="e.g. 600000" oninput="calcTDS()" />
+      </div>
+      <div class="form-group">
+        <label>Monthly TDS / Income Tax (₹)</label>
+        <input type="text" id="autoTDS" readonly style="background:#f0f4f8;font-weight:800;color:#4f46e5;font-size:1rem;" />
+      </div>
+    </div>
+    <!-- TAX COMPUTATION SUMMARY -->
+    <div id="taxSummaryBox" style="display:none;">
+      <table class="tax-summary-table">
+        <tr class="ts-head"><td colspan="2">📊 Tax Computation Summary (FY 2025-26)</td></tr>
+        <tr><td>Annual CTC / Gross Income</td><td id="ts_ctc">—</td></tr>
+        <tr class="ts-sub"><td id="ts_stdLabel">Less: Standard Deduction</td><td id="ts_std">—</td></tr>
+        <tr class="ts-sub" id="ts_exRow" style="display:none;"><td>Less: Exemptions (HRA + LTA)</td><td id="ts_ex">—</td></tr>
+        <tr class="ts-sub" id="ts_viRow" style="display:none;"><td>Less: Chapter VI-A Deductions</td><td id="ts_vi">—</td></tr>
+        <tr class="ts-total"><td>= Net Taxable Income</td><td id="ts_taxable">—</td></tr>
+        <tr><td>Tax on Taxable Income</td><td id="ts_tax">—</td></tr>
+        <tr><td>Add: 4% Health &amp; Education Cess</td><td id="ts_cess">—</td></tr>
+        <tr class="ts-rebate" id="ts_rebateRow" style="display:none;"><td>Less: 87A Rebate</td><td id="ts_rebate">—</td></tr>
+        <tr class="ts-tax"><td>Total Annual Tax Payable</td><td id="ts_annual">—</td></tr>
+        <tr class="ts-net"><td>Monthly TDS (÷ 12)</td><td id="ts_monthly">—</td></tr>
+      </table>
     </div>
   </div>
 
   <!-- EXEMPTIONS (Old Regime) -->
   <div class="card" id="exemptionsCard">
-    <h2>🧾 Exemptions &amp; Deductions (Old Regime Only)</h2>
-    <div class="info-box blue">These reduce your taxable income under Old Regime. Not applicable under New Regime.</div>
+    <h2>🧾 Exemptions &amp; Chapter VI-A Deductions <span style="font-size:0.7rem;color:#10b981;font-weight:600;">(Old Regime Only — Auto-Calculated)</span></h2>
+    <div class="info-box blue" style="margin-bottom:14px;">
+      All fields auto-calculate from your salary data. You can override any value. Caps are enforced as per Income Tax Act.
+    </div>
+
+    <!-- HRA EXEMPTION INPUTS -->
+    <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-size:0.78rem;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">HRA Exemption Calculator — Sec 10(13A)</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Monthly Rent Paid (₹) <span style="color:#ef4444">*</span></label>
+          <input type="number" id="rentPaid" placeholder="0 (enter if in rented house)" oninput="calcTDS()" />
+          <div class="calc-info">Leave 0 if staying in own house — HRA exemption will be ₹0</div>
+        </div>
+        <div class="form-group">
+          <label>City Type</label>
+          <select id="metroCity" onchange="calcTDS()">
+            <option value="metro">Metro City (Mumbai, Delhi, Kolkata, Chennai) — 50% of Basic</option>
+            <option value="nonmetro" selected>Non-Metro City — 40% of Basic</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:0.78rem;color:#64748b;background:#eff6ff;border-radius:6px;padding:8px 12px;" id="hraCalcInfo">
+        Enter monthly rent above to see HRA exemption calculation.
+      </div>
+    </div>
+
     <table class="salary-table">
-      <thead><tr><th>Exemption / Deduction</th><th>Annual Amount (₹)</th><th>Section</th></tr></thead>
+      <thead><tr><th>Exemption / Deduction</th><th style="width:200px;">Annual Amount (₹)</th><th style="width:130px;">Section</th></tr></thead>
       <tbody>
-        <tr><td><label>HRA Exemption (metro: 50%, non-metro: 40% of Basic)</label></td><td><input type="number" id="exHRA" placeholder="Auto or enter" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 10(13A)</td></tr>
-        <tr><td><label>LTA (Leave Travel Allowance)</label></td><td><input type="number" id="exLTA" placeholder="0" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 10(5)</td></tr>
-        <tr><td><label>80C – PF + PPF + ELSS + LIC + Tuition Fee</label></td><td><input type="number" id="ex80C" placeholder="Max ₹1,50,000" max="150000" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 80C</td></tr>
-        <tr><td><label>80D – Medical Insurance Premium</label></td><td><input type="number" id="ex80D" placeholder="Max ₹25,000 (self+family)" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 80D</td></tr>
-        <tr><td><label>80CCD(1B) – NPS Additional Contribution</label></td><td><input type="number" id="exNPS" placeholder="Max ₹50,000" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 80CCD(1B)</td></tr>
-        <tr><td><label>Home Loan Interest</label></td><td><input type="number" id="exHL" placeholder="Max ₹2,00,000" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Sec 24(b)</td></tr>
-        <tr><td><label>Other Deductions (80E, 80G, etc.)</label></td><td><input type="number" id="exOther" placeholder="0" oninput="calcTDS()" /></td><td style="font-size:0.78rem;color:#555;">Various</td></tr>
+        <tr>
+          <td>
+            <label>HRA Exemption <span class="auto-badge">AUTO</span></label>
+            <div class="calc-info" id="hraCapInfo"></div>
+          </td>
+          <td><input type="number" id="exHRA" placeholder="Auto-calculated" oninput="exHRA.dataset.manual='1'; calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Sec 10(13A)</td>
+        </tr>
+        <tr>
+          <td><label>LTA – Leave Travel Allowance</label></td>
+          <td><input type="number" id="exLTA" placeholder="0" oninput="calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Sec 10(5)</td>
+        </tr>
+        <tr>
+          <td>
+            <label>80C – PF + PPF + ELSS + LIC + Tuition <span class="auto-badge">AUTO (from PF)</span></label>
+            <div class="cap-info">Cap: ₹1,50,000</div>
+          </td>
+          <td><input type="number" id="ex80C" placeholder="Auto: Annual PF" oninput="ex80C.dataset.manual='1'; calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Sec 80C</td>
+        </tr>
+        <tr>
+          <td>
+            <label>80D – Medical Insurance Premium</label>
+            <div class="cap-info">Cap: ₹25,000 self+family / ₹50,000 if parents are senior citizens</div>
+          </td>
+          <td><input type="number" id="ex80D" placeholder="0" oninput="calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Sec 80D</td>
+        </tr>
+        <tr>
+          <td>
+            <label>80CCD(1B) – NPS Additional</label>
+            <div class="cap-info">Cap: ₹50,000 (over &amp; above 80C)</div>
+          </td>
+          <td><input type="number" id="exNPS" placeholder="0" oninput="calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Sec 80CCD(1B)</td>
+        </tr>
+        <tr>
+          <td>
+            <label>Home Loan Interest</label>
+            <div class="cap-info">Cap: ₹2,00,000 (self-occupied)</div>
+          </td>
+          <td><input type="number" id="exHL" placeholder="0" oninput="calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Sec 24(b)</td>
+        </tr>
+        <tr>
+          <td><label>Other – 80E (Education Loan) / 80G (Donations) etc.</label></td>
+          <td><input type="number" id="exOther" placeholder="0" oninput="calcTDS()" /></td>
+          <td style="font-size:0.75rem;color:#4f46e5;font-weight:600;">Various</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total Exemptions + Deductions (Annual)</td>
+          <td><input type="text" id="totalExemptions" readonly /></td>
+          <td></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -506,6 +617,10 @@
 </div><!-- /container -->
 
 <script>
+  // ===== INDIAN CURRENCY FORMAT =====
+  function inr(n) { return '₹ ' + Math.round(n).toLocaleString('en-IN'); }
+  function inrAbs(n) { return '₹ ' + Math.abs(Math.round(n)).toLocaleString('en-IN'); }
+
   // ===== TAX REGIME =====
   var currentRegime = 'new';
   function setRegime(r) {
@@ -515,47 +630,138 @@
     document.getElementById('regimeInfoOld').style.display = r === 'old' ? '' : 'none';
     document.getElementById('regimeInfoNew').style.display = r === 'new' ? '' : 'none';
     document.getElementById('exemptionsCard').style.display = r === 'old' ? '' : 'none';
+    // Clear manual flags when switching regime
+    document.getElementById('exHRA').dataset.manual = '';
+    document.getElementById('ex80C').dataset.manual = '';
     calcTDS();
   }
 
   function calcTDS() {
     var annualCTC = parseFloat(document.getElementById('annualCTC').value) || 0;
-    if (annualCTC <= 0) { document.getElementById('autoTDS').value = ''; document.getElementById('tds').value = 0; return; }
-    var annualTax = 0;
-    if (currentRegime === 'new') {
-      var taxable = annualCTC - 75000; // standard deduction
-      if (taxable <= 0) taxable = 0;
-      if (taxable <= 300000) annualTax = 0;
-      else if (taxable <= 700000) annualTax = (taxable - 300000) * 0.05;
-      else if (taxable <= 1000000) annualTax = 20000 + (taxable - 700000) * 0.10;
-      else if (taxable <= 1200000) annualTax = 50000 + (taxable - 1000000) * 0.15;
-      else if (taxable <= 1500000) annualTax = 80000 + (taxable - 1200000) * 0.20;
-      else annualTax = 140000 + (taxable - 1500000) * 0.30;
-      // Rebate 87A: if taxable <= 700000, tax = 0
-      if (taxable <= 700000) annualTax = 0;
-    } else {
-      // Old regime
-      var hra   = Math.min(parseFloat(document.getElementById('exHRA').value) || 0, annualCTC * 0.40);
-      var lta   = parseFloat(document.getElementById('exLTA').value) || 0;
-      var c80C  = Math.min(parseFloat(document.getElementById('ex80C').value) || 0, 150000);
-      var c80D  = Math.min(parseFloat(document.getElementById('ex80D').value) || 0, 25000);
-      var nps   = Math.min(parseFloat(document.getElementById('exNPS').value) || 0, 50000);
-      var hl    = Math.min(parseFloat(document.getElementById('exHL').value) || 0, 200000);
-      var other = parseFloat(document.getElementById('exOther').value) || 0;
-      var taxable = annualCTC - 50000 - hra - lta - c80C - c80D - nps - hl - other;
-      if (taxable <= 0) taxable = 0;
-      if (taxable <= 250000) annualTax = 0;
-      else if (taxable <= 500000) annualTax = (taxable - 250000) * 0.05;
-      else if (taxable <= 1000000) annualTax = 12500 + (taxable - 500000) * 0.20;
-      else annualTax = 112500 + (taxable - 1000000) * 0.30;
-      // Rebate 87A: if taxable <= 500000, tax = 0
-      if (taxable <= 500000) annualTax = 0;
+    // Auto-derive from monthly gross if annualCTC not entered
+    if (annualCTC <= 0) {
+      var gr = parseFloat(document.getElementById('grossEarnings').value.replace(/[^\d]/g,'')) || 0;
+      if (gr > 0) { annualCTC = gr * 12; document.getElementById('annualCTC').value = annualCTC; }
     }
-    // Add 4% Health & Education Cess
-    annualTax = annualTax * 1.04;
+    if (annualCTC <= 0) {
+      document.getElementById('autoTDS').value = '';
+      document.getElementById('tds').value = 0;
+      document.getElementById('taxSummaryBox').style.display = 'none';
+      calculateAll(); return;
+    }
+
+    var annualTax = 0, taxable = 0, stdDed = 0;
+    var totalEx = 0, totalVI = 0, rawTax = 0, cess = 0, rebate = 0;
+
+    if (currentRegime === 'new') {
+      stdDed  = 75000;
+      taxable = Math.max(annualCTC - stdDed, 0);
+      if      (taxable <= 300000)  rawTax = 0;
+      else if (taxable <= 700000)  rawTax = (taxable - 300000) * 0.05;
+      else if (taxable <= 1000000) rawTax = 20000  + (taxable - 700000)  * 0.10;
+      else if (taxable <= 1200000) rawTax = 50000  + (taxable - 1000000) * 0.15;
+      else if (taxable <= 1500000) rawTax = 80000  + (taxable - 1200000) * 0.20;
+      else                         rawTax = 140000 + (taxable - 1500000) * 0.30;
+      if (taxable <= 700000) { rebate = rawTax; rawTax = 0; }
+
+    } else {
+      // ===== OLD REGIME: AUTO-CALCULATE HRA EXEMPTION =====
+      stdDed = 50000;
+      var annualBasic = v('basic') * 12;
+      var annualHRA   = v('hra')   * 12;
+      var rentPaidMo  = parseFloat(document.getElementById('rentPaid').value) || 0;
+      var isMetro     = document.getElementById('metroCity').value === 'metro';
+      var hraFrac     = isMetro ? 0.50 : 0.40;
+
+      // Triplet Rule (Section 10(13A))
+      var rule1 = annualHRA;                                         // Actual HRA received
+      var rule2 = annualBasic * hraFrac;                             // 50/40% of Basic
+      var rule3 = Math.max((rentPaidMo * 12) - (annualBasic * 0.10), 0); // Rent - 10% Basic
+      var autoHRAEx = rentPaidMo > 0 ? Math.min(rule1, rule2, rule3) : 0;
+      autoHRAEx = Math.round(autoHRAEx);
+
+      // Update HRA info box
+      var infoEl = document.getElementById('hraCalcInfo');
+      if (rentPaidMo > 0) {
+        infoEl.innerHTML = '<strong>Triplet Rule: Min of —</strong><br/>' +
+          '① Actual HRA Received: ' + inr(rule1) + '<br/>' +
+          '② ' + (isMetro?'50':'40') + '% of Annual Basic: ' + inr(rule2) + '<br/>' +
+          '③ Annual Rent − 10% of Basic: ' + inr(rule3) + '<br/>' +
+          '<strong>Exempted: ' + inr(autoHRAEx) + '</strong>';
+      } else {
+        infoEl.textContent = 'Enter Monthly Rent Paid above to auto-calculate HRA exemption.';
+      }
+      if (!document.getElementById('exHRA').dataset.manual) {
+        document.getElementById('exHRA').value = autoHRAEx || '';
+        document.getElementById('hraCapInfo').textContent =
+          autoHRAEx > 0 ? 'Auto-calculated: ' + inr(autoHRAEx) + ' / year' : '';
+      }
+
+      // Auto-populate 80C with annual PF (if not manually set)
+      var annualPF = Math.round(v('basic') * 0.12 * 12);
+      var capped80C = Math.min(annualPF, 150000);
+      if (!document.getElementById('ex80C').dataset.manual) {
+        document.getElementById('ex80C').value = capped80C || '';
+      }
+
+      var hraEx  = Math.min(parseFloat(document.getElementById('exHRA').value) || 0, rule1);
+      var lta    = parseFloat(document.getElementById('exLTA').value)  || 0;
+      var c80C   = Math.min(parseFloat(document.getElementById('ex80C').value) || 0, 150000);
+      var c80D   = Math.min(parseFloat(document.getElementById('ex80D').value) || 0, 25000);
+      var nps    = Math.min(parseFloat(document.getElementById('exNPS').value) || 0, 50000);
+      var hl     = Math.min(parseFloat(document.getElementById('exHL').value)  || 0, 200000);
+      var xOther = parseFloat(document.getElementById('exOther').value) || 0;
+
+      totalEx = hraEx + lta;
+      totalVI = c80C + c80D + nps + hl + xOther;
+      taxable = Math.max(annualCTC - stdDed - totalEx - totalVI, 0);
+
+      // Update total exemptions display
+      document.getElementById('totalExemptions').value = inr(totalEx + totalVI);
+
+      if      (taxable <= 250000)  rawTax = 0;
+      else if (taxable <= 500000)  rawTax = (taxable - 250000) * 0.05;
+      else if (taxable <= 1000000) rawTax = 12500  + (taxable - 500000)  * 0.20;
+      else                         rawTax = 112500 + (taxable - 1000000) * 0.30;
+      if (taxable <= 500000) { rebate = rawTax; rawTax = 0; }
+    }
+
+    cess       = Math.round(rawTax * 0.04);
+    annualTax  = rawTax + cess;
     var monthlyTDS = Math.round(annualTax / 12);
-    document.getElementById('autoTDS').value = monthlyTDS > 0 ? '₹ ' + monthlyTDS.toLocaleString('en-IN') + ' / month' : '₹ 0 (No Tax)';
+
+    document.getElementById('autoTDS').value = monthlyTDS > 0
+      ? inr(monthlyTDS) + ' / month'
+      : '₹ 0 — No Tax (87A Rebate / Below Taxable Limit)';
     document.getElementById('tds').value = monthlyTDS;
+
+    // ===== TAX SUMMARY BOX =====
+    var box = document.getElementById('taxSummaryBox');
+    box.style.display = '';
+    document.getElementById('ts_ctc').textContent      = inr(annualCTC);
+    document.getElementById('ts_stdLabel').textContent = 'Less: Standard Deduction (' + (currentRegime==='new'?'₹75,000':'₹50,000') + ')';
+    document.getElementById('ts_std').textContent      = '− ' + inr(stdDed);
+    if (currentRegime === 'old') {
+      document.getElementById('ts_exRow').style.display = totalEx  > 0 ? '' : 'none';
+      document.getElementById('ts_viRow').style.display = totalVI  > 0 ? '' : 'none';
+      document.getElementById('ts_ex').textContent      = '− ' + inr(totalEx);
+      document.getElementById('ts_vi').textContent      = '− ' + inr(totalVI);
+    } else {
+      document.getElementById('ts_exRow').style.display = 'none';
+      document.getElementById('ts_viRow').style.display = 'none';
+    }
+    document.getElementById('ts_taxable').textContent  = inr(taxable);
+    document.getElementById('ts_tax').textContent      = inr(rawTax + (rebate > 0 ? rebate : 0));
+    document.getElementById('ts_cess').textContent     = inr(cess);
+    if (rebate > 0) {
+      document.getElementById('ts_rebateRow').style.display = '';
+      document.getElementById('ts_rebate').textContent = '− ' + inr(rebate);
+    } else {
+      document.getElementById('ts_rebateRow').style.display = 'none';
+    }
+    document.getElementById('ts_annual').textContent   = inr(annualTax);
+    document.getElementById('ts_monthly').textContent  = inr(monthlyTDS);
+
     calculateAll();
   }
 
@@ -589,7 +795,7 @@
 
     const grossFull = basic + hra + da + ta + med + spl + oth;
     const gross = Math.round(grossFull * clampedFactor);
-    document.getElementById('grossEarnings').value = '₹ ' + gross.toLocaleString('en-IN');
+    document.getElementById('grossEarnings').value = inr(gross);
 
     // PF: 12% of basic (capped at PF wage ceiling ₹15,000 → max ₹1800, but many cos use full basic)
     const pfField = document.getElementById('pf');
@@ -630,13 +836,19 @@
     const oded = v('otherDed');
 
     const totalDed = pf + esi + pt + tds + adv + oded;
-    document.getElementById('totalDeductions').value = '₹ ' + totalDed.toLocaleString('en-IN');
+    document.getElementById('totalDeductions').value = inr(totalDed);
+
+    // Auto-derive annualCTC from gross (if not manually set)
+    var ctcField = document.getElementById('annualCTC');
+    if (!ctcField.dataset.manual && gross > 0) {
+      ctcField.value = gross * 12;
+    }
 
     // Live summary bar
     var netLive = Math.max(gross - totalDed, 0);
-    document.getElementById('summaryGross').textContent = '₹ ' + gross.toLocaleString('en-IN');
-    document.getElementById('summaryDed').textContent   = '₹ ' + totalDed.toLocaleString('en-IN');
-    document.getElementById('summaryNet').textContent   = '₹ ' + netLive.toLocaleString('en-IN');
+    document.getElementById('summaryGross').textContent = inr(gross);
+    document.getElementById('summaryDed').textContent   = inr(totalDed);
+    document.getElementById('summaryNet').textContent   = inr(netLive);
   }
 
   // Mark HRA as manually edited
@@ -646,7 +858,13 @@
   });
   document.getElementById('basic').addEventListener('input', function() {
     document.getElementById('hra').dataset.manual = 'false';
+    document.getElementById('exHRA').dataset.manual = '';
+    document.getElementById('ex80C').dataset.manual = '';
+    document.getElementById('annualCTC').dataset.manual = '';
     calculateAll();
+  });
+  document.getElementById('annualCTC').addEventListener('input', function() {
+    this.dataset.manual = '1';
   });
 
   // ===== NUMBER TO WORDS (Indian) =====
@@ -666,8 +884,8 @@
     return convert(Math.round(n)) + ' Rupees Only';
   }
 
-  // ===== FORMAT ₹ =====
-  function fmt(n) { return '₹ ' + Math.round(n).toLocaleString('en-IN'); }
+  // ===== FORMAT ₹ (Indian) =====
+  function fmt(n) { return inr(n); }
 
   // ===== GENERATE SLIP =====
   function generateSlip() {
@@ -800,9 +1018,10 @@
       </div>
       <div class="slip-words">Amount in Words: <strong>${numToWords(netPay)}</strong></div>
 
-      <div style="margin-top:10px; font-size:0.75rem; background:#f5f5f5; border-radius:4px; padding:7px 10px; color:#555;">
-        <strong>Tax Regime:</strong> ${currentRegime === 'new' ? 'New Tax Regime (FY 2025-26)' : 'Old Tax Regime (FY 2025-26)'}
-        &nbsp;|&nbsp; <strong>TDS/Month:</strong> ${fmt(v('tds'))}
+      <div style="margin-top:10px; font-size:0.75rem; background:#f5f5f5; border-radius:4px; padding:8px 12px; color:#555; line-height:1.8;">
+        <strong>Tax Regime:</strong> ${currentRegime === 'new' ? 'New Tax Regime (FY 2025-26) — Std. Ded. ₹75,000' : 'Old Tax Regime (FY 2025-26) — Std. Ded. ₹50,000 + Exemptions'}
+        &nbsp;|&nbsp; <strong>Annual TDS:</strong> ${inr(v('tds') * 12)}
+        &nbsp;|&nbsp; <strong>Monthly TDS:</strong> ${inr(v('tds'))}
       </div>
 
       <div style="margin-top:10px; font-size:0.7rem; color:#888; border-top:1px dashed #ccc; padding-top:8px; line-height:1.6;">
@@ -842,6 +1061,14 @@
     document.getElementById('chkPF').checked = true;
     document.getElementById('chkESI').checked = true;
     document.getElementById('chkPT').checked = true;
+    document.getElementById('rentPaid').value = '';
+    document.getElementById('metroCity').value = 'nonmetro';
+    document.getElementById('hraCalcInfo').textContent = 'Enter monthly rent above to see HRA exemption calculation.';
+    document.getElementById('hraCapInfo').textContent = '';
+    document.getElementById('exHRA').dataset.manual = '';
+    document.getElementById('ex80C').dataset.manual = '';
+    document.getElementById('annualCTC').dataset.manual = '';
+    document.getElementById('taxSummaryBox').style.display = 'none';
     setRegime('new');
     document.getElementById('preview-section').style.display = 'none';
   }
