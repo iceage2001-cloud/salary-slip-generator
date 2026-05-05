@@ -18,7 +18,19 @@
   <style>
     /* ===== RESET & BASE ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', 'Roboto', Arial, sans-serif; background: #f1f5f9; color: #1e293b; font-size: 15px; line-height: 1.5; }
+    body {
+      font-family: 'Inter', 'Roboto', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,0.14) 0 3px, transparent 4px),
+        radial-gradient(circle at 82% 72%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
+        radial-gradient(70% 55% at 16% 84%, rgba(168,85,247,0.28) 0%, transparent 70%),
+        radial-gradient(80% 60% at 88% 12%, rgba(99,102,241,0.26) 0%, transparent 68%),
+        linear-gradient(135deg, #32115f 0%, #4c1d95 45%, #312e81 100%);
+      color: #f8fafc;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
 
     /* ===== HEADER ===== */
     header {
@@ -121,6 +133,17 @@
       margin-bottom: 18px;
       text-transform: uppercase;
       letter-spacing: 1px;
+    }
+
+    .gratuity-note {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: #475569;
+      line-height: 1.7;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
     }
 
     /* ===== FORM GRID ===== */
@@ -588,6 +611,18 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="info-box orange" style="margin-top:14px;">
+      <strong>Tax Saving Titbits (Quick Tips):</strong>
+      <ul style="margin:8px 0 0 18px; line-height:1.8;">
+        <li><strong>80C:</strong> Maximize up to ₹1,50,000 using EPF, PPF, ELSS, life insurance premium, home-loan principal, and children's tuition fee.</li>
+        <li><strong>80D:</strong> Claim health insurance premium up to ₹25,000 (self/family) and additional parent cover as per age rules.</li>
+        <li><strong>NPS 80CCD(1B):</strong> Extra deduction up to ₹50,000 over and above 80C can reduce taxable income meaningfully.</li>
+        <li><strong>Home Loan Interest:</strong> If eligible, claim up to ₹2,00,000 under Section 24(b) for self-occupied property.</li>
+        <li><strong>Plan Early:</strong> Invest monthly instead of year-end lump sum to avoid rushed tax-saving decisions.</li>
+      </ul>
+      <div style="margin-top:8px; font-size:0.74rem;">These are general pointers. Always verify final eligibility and proofs with HR/CA before filing ITR.</div>
+    </div>
   </div>
 
   <!-- DEDUCTIONS -->
@@ -610,6 +645,51 @@
         <tr class="total-row"><td>Total Deductions</td><td><input type="text" id="totalDeductions" readonly /></td></tr>
       </tbody>
     </table>
+
+    <div class="info-box blue" style="margin-top:14px;">
+      <strong>Gratuity Calculator (India):</strong> Formula used is (15 / 26) × Last Drawn Wages × Service.
+      Wages for gratuity typically include Basic + Dearness Allowance (DA). Gratuity is an employer-paid terminal benefit and is not deducted from monthly net salary.
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Employee Type</label>
+        <select id="gratuityEmpType" onchange="calculateAll()">
+          <option value="regular" selected>Regular / Non-Fixed-Term (5-year rule)</option>
+          <option value="fixed">Fixed-Term (1-year rule, pro-rata)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Completed Service (Years)</label>
+        <input type="number" id="gratuityYears" value="5" min="0" step="1" oninput="calculateAll()" />
+      </div>
+      <div class="form-group">
+        <label>Additional Service (Months)</label>
+        <input type="number" id="gratuityMonths" value="0" min="0" max="11" step="1" oninput="calculateAll()" />
+      </div>
+      <div class="form-group">
+        <label>Wage Basis for Gratuity</label>
+        <select id="gratuityWageBasis" onchange="calculateAll()">
+          <option value="basic_da" selected>Basic + DA (recommended)</option>
+          <option value="basic_only">Basic only (custom policy)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gratuity Eligibility</label>
+        <input type="text" id="gratuityStatus" value="Eligible (5+ years)" readonly />
+      </div>
+      <div class="form-group">
+        <label>Estimated Gratuity (Annual)</label>
+        <input type="text" id="gratuityAnnual" readonly />
+      </div>
+      <div class="form-group">
+        <label>Gratuity Monthly Provision</label>
+        <input type="text" id="gratuityMonthly" readonly />
+      </div>
+    </div>
+    <div class="gratuity-note">
+      Note: Regular employees are generally eligible after 5 years. Fixed-term employees are generally eligible on contract termination after 1 year (pro-rata).
+      For exact payable amount and tax treatment, verify with HR/CA.
+    </div>
   </div>
 
   <!-- LEGAL DISCLAIMER -->
@@ -693,6 +773,149 @@
       <p>The <strong>Indian Salary Slip Generator</strong> is a free, browser-based tool built for Indian employees and HR professionals. It auto-calculates PF (12%), ESI (0.75%), HRA (40%/50%), Professional Tax, and TDS under both Old and New Tax Regimes for FY 2025-26.</p>
       <p style="margin-top:8px;">All calculations happen <strong>entirely in your browser</strong> — no data is sent to any server, no account required.</p>
       <p style="margin-top:8px;"><strong>Contact / Feedback:</strong> Found a bug or have a suggestion? Reach us at <a href="mailto:salaryslipgenerator@gmail.com" style="color:#4f46e5;">salaryslipgenerator@gmail.com</a></p>
+    </div>
+  </div>
+
+  <!-- COMPREHENSIVE FAQ SECTION -->
+  <div class="card no-print" id="faq">
+    <h2>❓ Frequently Asked Questions (FAQ)</h2>
+    <div style="line-height:1.8; font-size:0.88rem; color:#444;">
+      
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is Provident Fund (PF)?</summary>
+        <p style="margin-top:10px; color:#555;">
+        The Provident Fund (PF) is a social security and retirement savings scheme for Indian employees. Employees contribute 12% of their basic salary, and employers contribute an equal amount (12%). The total 24% goes into your PF account, which you can withdraw after leaving employment or at retirement. Employers also contribute 8.33% as employer pension obligation (EPO).
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is ESI (Employee State Insurance)?</summary>
+        <p style="margin-top:10px; color:#555;">
+        ESI is mandatory for employees earning up to ₹21,000/month (as of FY 2025-26). The employee contributes 0.75% of wages, and the employer contributes 3.25%. ESI provides health and disability benefits, including medical treatment, disability benefits, and cash benefits during illness or injury.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">How is HRA (House Rent Allowance) calculated?</summary>
+        <p style="margin-top:10px; color:#555;">
+        HRA is calculated at 40% of basic salary in metro cities (Delhi, Mumbai, Bangalore, Kolkata) and 50% in non-metro cities. HRA is taxable under Section 10(13A) if actual rent paid exceeds the following limit: (HRA or 10% of salary, whichever is lower). Some employers provide HRA differently based on company policy; this tool uses standard percentages.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is TDS and how is it calculated?</summary>
+        <p style="margin-top:10px; color:#555;">
+        Tax Deducted at Source (TDS) is income tax deducted directly from your salary by your employer. It's calculated based on your annual gross salary using progressive tax slabs under either the Old or New Tax Regime. For FY 2025-26, the Old Regime has 7 tax slabs (0%, 5%, 20%, 30%), while the New Regime has 8 slabs with a lower tax burden. The tax is calculated monthly and deducted from your net salary.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is the difference between Old and New Tax Regimes?</summary>
+        <p style="margin-top:10px; color:#555;">
+        The <strong>Old Tax Regime</strong> allows deductions under sections like 80C (investments, life insurance, PPF, home loan principal), 80D (health insurance), 80CCD(1B) (NPS), and 24(b) (home loan interest). The <strong>New Tax Regime</strong> offers lower tax rates but doesn't allow most deductions. High-income earners with significant investments typically benefit from the Old Regime, while others may prefer the New Regime for simplicity and lower tax rates.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is Professional Tax (PT)?</summary>
+        <p style="margin-top:10px; color:#555;">
+        Professional Tax is a state-level tax levied on professionals and employees. It varies by state: in Tamil Nadu, it's ₹0-2,400 annually; in Maharashtra, it's ₹0-2,500; in Delhi, it's ₹0-2,500. Self-employed professionals and salaried employees above a certain income threshold must pay PT. Rates depend on your profession and state.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is Gratuity and when am I eligible?</summary>
+        <p style="margin-top:10px; color:#555;">
+        Gratuity is a lump-sum payment made by employers to employees at retirement or separation. For regular employees: eligibility requires 5 years of continuous service. For fixed-term employees: eligibility is 1 year. The gratuity is calculated as: (15/26) × (Basic + DA) × Years of Service. Maximum gratuity is ₹20 lakhs as per law. This tool estimates your gratuity for informational purposes.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">Can I claim tax deductions under Section 80C?</summary>
+        <p style="margin-top:10px; color:#555;">
+        Yes, under the Old Tax Regime. Section 80C allows deductions up to ₹1.5 lakhs/year for: Life Insurance Premiums, EPF contributions, PPF deposits, ELSS mutual funds, home loan principal repayment, and tuition fees. Additionally, Section 80CCD(1B) allows ₹50,000 extra deduction for NPS (National Pension System) contributions. These deductions reduce your taxable income, lowering your TDS.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">What is Section 87A rebate?</summary>
+        <p style="margin-top:10px; color:#555;">
+        Section 87A rebate applies to individuals with taxable income up to ₹5 lakhs under the New Tax Regime. If your tax liability is less than ₹12,500, you get a full rebate (i.e., zero tax). This is automatically calculated in this tool and significantly reduces tax for lower-income earners.
+        </p>
+      </details>
+
+      <details style="margin-bottom:16px; border:1px solid #e2e8f0; padding:12px; border-radius:8px; cursor:pointer;">
+        <summary style="font-weight:600; color:#1f2937;">How is net salary calculated?</summary>
+        <p style="margin-top:10px; color:#555;">
+        Net Salary = Gross Salary - Total Deductions. Gross Salary includes Basic + HRA + DA + TA + Medical + Special + Other Allowances. Total Deductions include PF, ESI, PT, TDS, Advance/Loan Recovery, and Other Deductions. The net salary is what you actually receive in your bank account each month.
+        </p>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- EDUCATIONAL GUIDE SECTION -->
+  <div class="card no-print" id="guide">
+    <h2>📚 Complete Guide to Indian Salary Slips</h2>
+    <div style="line-height:1.9; font-size:0.88rem; color:#555;">
+      
+      <h3 style="margin-top:16px; margin-bottom:8px; color:#1f2937; font-weight:700;">Understanding Gross vs. Net Salary</h3>
+      <p><strong>Gross Salary</strong> is your total compensation before any deductions: Basic + Allowances. <strong>Net Salary</strong> is what you receive after deductions like PF, ESI, PT, and TDS. Always compare job offers using gross salary, as net varies based on personal tax regime and deductions.</p>
+
+      <h3 style="margin-top:16px; margin-bottom:8px; color:#1f2937; font-weight:700;">Tax Regime Comparison for FY 2025-26</h3>
+      <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:0.8rem;">
+        <tr style="background:#f3f4f6;">
+          <th style="padding:8px; border:1px solid #d1d5db; text-align:left;">Annual Income</th>
+          <th style="padding:8px; border:1px solid #d1d5db; text-align:left;">Old Regime Tax</th>
+          <th style="padding:8px; border:1px solid #d1d5db; text-align:left;">New Regime Tax</th>
+        </tr>
+        <tr>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹3 Lakh</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹0</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹0 (87A Rebate)</td>
+        </tr>
+        <tr style="background:#f9fafb;">
+          <td style="padding:8px; border:1px solid #d1d5db;">₹5 Lakh</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹0 - ₹50K (with deductions)</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹0 (87A Rebate)</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹10 Lakh</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹80K - ₹140K (with deductions)</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹1.38 Lakh</td>
+        </tr>
+        <tr style="background:#f9fafb;">
+          <td style="padding:8px; border:1px solid #d1d5db;">₹20 Lakh</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹3.5L - ₹4.5L (with deductions)</td>
+          <td style="padding:8px; border:1px solid #d1d5db;">₹4.2L</td>
+        </tr>
+      </table>
+
+      <h3 style="margin-top:16px; margin-bottom:8px; color:#1f2937; font-weight:700;">Top Tax Saving Tips for 2025-26</h3>
+      <ul style="margin-left:20px;">
+        <li><strong>80C Investments:</strong> Max out ₹1.5 lakh via PPF, ELSS, LIC premiums, or home loan principal. This reduces taxable income directly.</li>
+        <li><strong>NPS (80CCD-1B):</strong> Invest up to ₹50,000 extra in NPS for additional deduction under Old Regime. Perfect for retirement planning.</li>
+        <li><strong>Health Insurance (80D):</strong> Self + Family: ₹25,000; Senior Citizen: ₹50,000. Essential for tax savings and health protection.</li>
+        <li><strong>Home Loan Interest (24b):</strong> Full interest on home loans is deductible (no cap). Ideal for homeowners with large mortgages.</li>
+        <li><strong>Evaluate Tax Regime:</strong> Switch to Old Regime if total investments exceed ₹3-4 lakhs annually. Use the 87A rebate in New Regime if income is under ₹5 lakhs.</li>
+        <li><strong>Monthly Planning:</strong> Review your payslip monthly. If TDS is too high, request adjustment via Form 12B to avoid excess tax.</li>
+      </ul>
+
+      <h3 style="margin-top:16px; margin-bottom:8px; color:#1f2937; font-weight:700;">How to Read Your Salary Slip</h3>
+      <p><strong>Earnings Section:</strong> Shows all income components (Basic, HRA, DA, TA, Medical, etc.). Verify that percentages match your offer letter.</p>
+      <p style="margin-top:8px;"><strong>Deductions Section:</strong> Lists PF, ESI, PT, TDS, Advances, and Other Deductions. Ensure PF is correct (typically 12% of Basic or as per contract).</p>
+      <p style="margin-top:8px;"><strong>Tax Summary:</strong> Check TDS is reasonable for your income level. If it seems high, request a revised TDS calculation.</p>
+      <p style="margin-top:8px;"><strong>Net Salary:</strong> Your final take-home amount. Verify it matches your bank deposit.</p>
+
+      <h3 style="margin-top:16px; margin-bottom:8px; color:#1f2937; font-weight:700;">Common Salary Slip Errors & How to Fix Them</h3>
+      <ul style="margin-left:20px;">
+        <li><strong>Incorrect HRA Percentage:</strong> Verify HRA% is correct for your city (40% metro, 50% non-metro). Raise a ticket with HR if wrong.</li>
+        <li><strong>PF Calculation Error:</strong> PF should be 12% of Basic Salary. If it's on Gross, request correction.</li>
+        <li><strong>Excessive TDS:</strong> If TDS seems too high, submit Form 12B to claim lower tax rate based on expected income.</li>
+        <li><strong>Missing Allowances:</strong> Cross-check all allowances against your offer letter. Some companies misclassify bonuses as salary.</li>
+        <li><strong>PT Deduction Issues:</strong> Professional Tax rates vary by state. Verify your state's PT slab in your payroll system.</li>
+      </ul>
+
     </div>
   </div>
 
@@ -962,6 +1185,25 @@
     const esi = v('esi');
     const pt  = v('pt');
 
+    // Gratuity estimate (India): (15/26) * Last Drawn Wages * Service
+    const gratuityYears = Math.max(v('gratuityYears'), 0);
+    const gratuityMonthsRaw = Math.max(Math.min(v('gratuityMonths'), 11), 0);
+    const gratuityEmpType = document.getElementById('gratuityEmpType').value;
+    const gratuityWageBasis = document.getElementById('gratuityWageBasis').value;
+    const gratuityWage = gratuityWageBasis === 'basic_da' ? (basic + da) : basic;
+    const totalServiceYears = gratuityYears + (gratuityMonthsRaw / 12);
+    const serviceYearsForFormula = gratuityEmpType === 'fixed'
+      ? totalServiceYears
+      : gratuityYears + (gratuityMonthsRaw >= 6 ? 1 : 0);
+    const gratuityEligible = gratuityEmpType === 'fixed' ? totalServiceYears >= 1 : totalServiceYears >= 5;
+    const gratuityAnnual = gratuityEligible ? Math.round((15 / 26) * gratuityWage * serviceYearsForFormula) : 0;
+    const gratuityMonthly = Math.round(gratuityAnnual / 12);
+    document.getElementById('gratuityStatus').value = gratuityEligible
+      ? (gratuityEmpType === 'fixed' ? 'Eligible (Fixed-Term: 1+ year)' : 'Eligible (Regular: 5+ years)')
+      : (gratuityEmpType === 'fixed' ? 'Not Eligible (<1 year)' : 'Not Eligible (<5 years)');
+    document.getElementById('gratuityAnnual').value = gratuityAnnual > 0 ? inr(gratuityAnnual) : '₹ 0';
+    document.getElementById('gratuityMonthly').value = gratuityAnnual > 0 ? inr(gratuityMonthly) : '₹ 0';
+
     // Auto-derive annualCTC from gross (if not manually set)
     var ctcField = document.getElementById('annualCTC');
     if (!ctcField.dataset.manual && gross > 0) {
@@ -1072,6 +1314,17 @@
     const tds     = v('tds');
     const adv     = v('advance');
     const oded    = v('otherDed');
+    const gratuityYears = Math.max(v('gratuityYears'), 0);
+    const gratuityMonthsRaw = Math.max(Math.min(v('gratuityMonths'), 11), 0);
+    const gratuityEmpType = document.getElementById('gratuityEmpType').value;
+    const gratuityWageBasis = document.getElementById('gratuityWageBasis').value;
+    const gratuityWage = gratuityWageBasis === 'basic_da' ? (basic + da) : basic;
+    const totalServiceYears = gratuityYears + (gratuityMonthsRaw / 12);
+    const serviceYearsForFormula = gratuityEmpType === 'fixed'
+      ? totalServiceYears
+      : gratuityYears + (gratuityMonthsRaw >= 6 ? 1 : 0);
+    const gratuityEligible = gratuityEmpType === 'fixed' ? totalServiceYears >= 1 : totalServiceYears >= 5;
+    const gratuityAnnual = gratuityEligible ? Math.round((15 / 26) * gratuityWage * serviceYearsForFormula) : 0;
     const totalDed = pf + esi + pt + tds + adv + oded;
     const netPay  = gross - totalDed;
 
@@ -1133,6 +1386,7 @@
         ${infoRow('Bank Name', document.getElementById('bankName').value.trim())}
         ${infoRow('Working Days', workDays)}
         ${infoRow('Days Paid', daysPaid + (lwp > 0 ? ' (LWP: '+lwp+')' : ''))}
+        ${infoRow('Service Years (Gratuity)', gratuityYears + ' years ' + gratuityMonthsRaw + ' months')}
       </div>
 
       <div class="slip-earn-ded">
@@ -1158,6 +1412,8 @@
         <strong>Tax Regime:</strong> ${currentRegime === 'new' ? 'New Tax Regime (FY 2025-26) — Std. Ded. ₹75,000' : 'Old Tax Regime (FY 2025-26) — Std. Ded. ₹50,000 + Exemptions'}
         &nbsp;|&nbsp; <strong>Annual TDS:</strong> ${inr(v('tds') * 12)}
         &nbsp;|&nbsp; <strong>Monthly TDS:</strong> ${inr(v('tds'))}
+        &nbsp;|&nbsp; <strong>Estimated Gratuity:</strong> ${inr(gratuityAnnual)}
+        &nbsp;|&nbsp; <strong>Wage Basis:</strong> ${gratuityWageBasis === 'basic_da' ? 'Basic + DA' : 'Basic only'}
       </div>
 
       <div style="margin-top:10px; font-size:0.7rem; color:#888; border-top:1px dashed #ccc; padding-top:8px; line-height:1.6;">
@@ -1197,6 +1453,13 @@
     document.getElementById('chkPF').checked = true;
     document.getElementById('chkESI').checked = true;
     document.getElementById('chkPT').checked = true;
+    document.getElementById('gratuityEmpType').value = 'regular';
+    document.getElementById('gratuityWageBasis').value = 'basic_da';
+    document.getElementById('gratuityYears').value = 5;
+    document.getElementById('gratuityMonths').value = 0;
+    document.getElementById('gratuityStatus').value = 'Eligible (5+ years)';
+    document.getElementById('gratuityAnnual').value = '';
+    document.getElementById('gratuityMonthly').value = '';
     document.getElementById('rentPaid').value = '';
     document.getElementById('metroCity').value = 'nonmetro';
     document.getElementById('hraCalcInfo').textContent = 'Enter monthly rent above to see HRA exemption calculation.';
