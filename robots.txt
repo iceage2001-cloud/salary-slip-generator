@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://iceage2001-cloud.github.io/salary-slip-generator/sitemap.xml
